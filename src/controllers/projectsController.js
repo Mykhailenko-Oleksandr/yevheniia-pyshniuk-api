@@ -11,7 +11,7 @@ export const getAllProjects = async (req, res) => {
 
   const [totalProjects, projects] = await Promise.all([
     projectsQuery.clone().countDocuments(),
-    projectsQuery.skip(skip).limit(perPage).sort({ createdAt: 'asc' }),
+    projectsQuery.skip(skip).limit(perPage).sort({ createdAt: 'desc' }),
   ]);
 
   const totalPages = Math.ceil(totalProjects / perPage);
@@ -99,7 +99,7 @@ export const deleteProject = async (req, res) => {
   const { projectId } = req.params;
 
   if (req.user?.role !== 'Admin') {
-    throw createHttpError(401, 'Only admin can update projects');
+    throw createHttpError(401, 'Only admin can delete projects');
   }
 
   const project = await Project.findOneAndDelete({

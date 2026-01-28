@@ -10,7 +10,7 @@ export const getAllFeedbacks = async (req, res) => {
 
   const [totalFeedbacks, feedbacks] = await Promise.all([
     projectsQuery.clone().countDocuments(),
-    projectsQuery.skip(skip).limit(perPage).sort({ createdAt: 'asc' }),
+    projectsQuery.skip(skip).limit(perPage).sort({ createdAt: 'desc' }),
   ]);
 
   const totalPages = Math.ceil(totalFeedbacks / perPage);
@@ -37,9 +37,25 @@ export const getFeedbackById = async (req, res) => {
 };
 
 export const createFeedback = async (req, res) => {
-  const { createData } = req.body;
+  const { userName, comment, rating } = req.body;
 
-  const newFeedback = await Feedback.create({ ...createData });
+  const newFeedback = await Feedback.create({ userName, comment, rating });
 
   res.status(200).json(newFeedback);
+};
+
+export const deleteFeedback = async (req, res) => {
+  const { feedbackId } = req.params;
+
+  if (req.user?.role !== 'Admin') {
+    throw createHttpError(401, 'Only admin can delete feedback');
+  }
+
+  const feedback = await Feedback.findByIdAndDelete(feedbackId);
+
+  if (!feedback) {
+    throw createHttpError(404, 'Feedback not found');
+  }
+
+  res.status(200).json(feedback);
 };

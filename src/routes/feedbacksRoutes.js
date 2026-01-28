@@ -1,7 +1,8 @@
-// import { authenticate } from '../middleware/authenticate.js';
+import { authenticate } from '../middleware/authenticate.js';
 import { Router } from 'express';
 import {
   createFeedback,
+  deleteFeedback,
   getAllFeedbacks,
   getFeedbackById,
 } from '../controllers/feedbacksController.js';
@@ -23,5 +24,12 @@ router.get(
 );
 
 router.post('/api/feedbacks', celebrate(createFeedbackSchema), createFeedback);
+
+router.delete(
+  '/api/feedbacks/:feedbackId',
+  authenticate,
+  celebrate(feedbackIdSchema),
+  deleteFeedback,
+);
 
 export default router;
