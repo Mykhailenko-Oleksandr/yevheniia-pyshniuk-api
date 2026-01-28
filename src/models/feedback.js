@@ -2,7 +2,7 @@ import { model, Schema } from 'mongoose';
 
 const feedbackSchema = new Schema(
   {
-    name: {
+    userName: {
       type: String,
       required: true,
       trim: true,

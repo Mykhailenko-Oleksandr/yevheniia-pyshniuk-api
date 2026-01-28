@@ -20,8 +20,8 @@ export const feedbackIdSchema = {
 
 export const createFeedbackSchema = {
   [Segments.BODY]: Joi.object({
-    name: Joi.string().min(3).max(30).trim().required(),
+    userName: Joi.string().min(3).max(30).trim().required(),
     comment: Joi.string().min(10).max(100).trim().required(),
     rating: Joi.number().min(1).max(5).integer().required(),
-  }),
+  }).required(),
 };
