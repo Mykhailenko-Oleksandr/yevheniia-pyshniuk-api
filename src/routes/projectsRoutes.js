@@ -2,11 +2,13 @@ import { Router } from 'express';
 import { celebrate } from 'celebrate';
 import {
   createProject,
+  deleteProject,
   getAllProjects,
   updateProject,
 } from '../controllers/projectsController.js';
 import {
   createProjectSchema,
+  deleteProjectSchema,
   getAllProjectsSchema,
   updateProjectSchema,
 } from '../validations/projectsValidation.js';
@@ -29,6 +31,12 @@ router.patch(
   upload.array('images', 10),
   celebrate(updateProjectSchema),
   updateProject,
+);
+router.delete(
+  '/api/project/:projectId',
+  authenticate,
+  celebrate(deleteProjectSchema),
+  deleteProject,
 );
 
 export default router;

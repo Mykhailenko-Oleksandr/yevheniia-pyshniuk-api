@@ -41,6 +41,12 @@ export const updateProjectSchema = {
   }),
 };
 
+export const deleteProjectSchema = {
+  [Segments.PARAMS]: Joi.object({
+    projectId: Joi.string().custom(objectIdValidator).required(),
+  }),
+};
+
 // export const noteIdSchema = {
 //   [Segments.PARAMS]: Joi.object({
 //     noteId: Joi.string().custom(objectIdValidator).required(),

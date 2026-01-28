@@ -26,7 +26,7 @@ export const getAllProjects = async (req, res) => {
 };
 
 export const createProject = async (req, res) => {
-  if (req.user.role !== 'Admin') {
+  if (req.user?.role !== 'Admin') {
     throw createHttpError(401, 'Only admin can create new projects');
   }
 
@@ -52,7 +52,7 @@ export const createProject = async (req, res) => {
 export const updateProject = async (req, res) => {
   const { projectId } = req.params;
 
-  if (req.user.role !== 'Admin') {
+  if (req.user?.role !== 'Admin') {
     throw createHttpError(401, 'Only admin can update projects');
   }
 
@@ -81,4 +81,22 @@ export const updateProject = async (req, res) => {
   }
 
   res.status(200).json(updatedProject);
+};
+
+export const deleteProject = async (req, res) => {
+  const { projectId } = req.params;
+
+  if (req.user?.role !== 'Admin') {
+    throw createHttpError(401, 'Only admin can update projects');
+  }
+
+  const project = await Project.findOneAndDelete({
+    _id: projectId,
+  });
+
+  if (!project) {
+    throw createHttpError(404, 'Project not found');
+  }
+
+  res.status(200).json(project);
 };
