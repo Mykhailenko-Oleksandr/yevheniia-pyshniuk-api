@@ -19,6 +19,7 @@ import { upload } from '../middleware/multer.js';
 const router = Router();
 
 router.get('/api/projects', celebrate(getAllProjectsSchema), getAllProjects);
+
 router.get(
   '/api/projects/:projectId',
   celebrate(projectIdSchema),
@@ -32,6 +33,7 @@ router.post(
   celebrate(createProjectSchema),
   createProject,
 );
+
 router.patch(
   '/api/projects/:projectId',
   authenticate,
@@ -39,6 +41,7 @@ router.patch(
   celebrate(updateProjectSchema),
   updateProject,
 );
+
 router.delete(
   '/api/projects/:projectId',
   authenticate,

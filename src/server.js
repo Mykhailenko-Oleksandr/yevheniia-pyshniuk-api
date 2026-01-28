@@ -9,6 +9,7 @@ import { logger } from './middleware/logger.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import projectsRoutes from './routes/projectsRoutes.js';
+import feedbacksRoutes from './routes/feedbacksRoutes.js';
 
 import cookieParser from 'cookie-parser';
 
@@ -22,6 +23,7 @@ app.use(helmet());
 app.use(cookieParser());
 
 app.use(projectsRoutes);
+app.use(feedbacksRoutes);
 
 app.use(notFoundHandler);
 
