@@ -1,9 +1,9 @@
 import { Joi, Segments } from 'celebrate';
-// import { isValidObjectId } from 'mongoose';
+import { isValidObjectId } from 'mongoose';
 
-// const objectIdValidator = (value, helpers) => {
-//   return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
-// };
+const objectIdValidator = (value, helpers) => {
+  return !isValidObjectId(value) ? helpers.message('Invalid id format') : value;
+};
 
 export const getAllProjectsSchema = {
   [Segments.QUERY]: Joi.object({
@@ -22,6 +22,22 @@ export const createProjectSchema = {
       title: Joi.string().min(3).max(50).trim().required(),
       description: Joi.string().min(10).max(400).trim().required(),
     }).required(),
+  }),
+};
+
+export const updateProjectSchema = {
+  [Segments.PARAMS]: Joi.object({
+    projectId: Joi.string().custom(objectIdValidator).required(),
+  }),
+  [Segments.BODY]: Joi.object({
+    en: Joi.object({
+      title: Joi.string().min(3).max(50).trim(),
+      description: Joi.string().min(10).max(400).trim(),
+    }),
+    uk: Joi.object({
+      title: Joi.string().min(3).max(50).trim(),
+      description: Joi.string().min(10).max(400).trim(),
+    }),
   }),
 };
 
