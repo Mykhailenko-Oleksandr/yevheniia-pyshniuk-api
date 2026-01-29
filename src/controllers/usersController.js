@@ -2,6 +2,7 @@ import createHttpError from 'http-errors';
 import bcrypt from 'bcrypt';
 import { User } from '../models/user.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { Session } from '../models/session.js';
 
 export const getCurrentUser = async (req, res) => {
   const userId = req.user?._id;
@@ -133,5 +134,5 @@ export const updateUserPassword = async (req, res) => {
 
   await Session.deleteMany({ userId: user._id });
 
-  res.status(200).json(user);
+  res.status(200).json({ message: 'Password updated' });
 };
