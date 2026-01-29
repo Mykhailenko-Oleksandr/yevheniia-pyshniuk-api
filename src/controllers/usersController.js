@@ -1,4 +1,5 @@
 import createHttpError from 'http-errors';
+import bcrypt from 'bcrypt';
 import { User } from '../models/user.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
@@ -67,4 +68,70 @@ export const updateUserAvatar = async (req, res) => {
   );
 
   res.status(200).json({ url: user.avatar });
+};
+
+export const updateUserRole = async (req, res) => {
+  const { userId } = req.params;
+  const { role } = req.body;
+
+  if (req.user?.role !== 'Admin') {
+    throw createHttpError(401, 'Only admin can update role users');
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      role,
+    },
+    { new: true },
+  );
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  res.status(200).json(user);
+};
+
+export const updateUserName = async (req, res) => {
+  const { firstName, lastName } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      firstName,
+      lastName,
+    },
+    { new: true },
+  );
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  res.status(200).json(user);
+};
+
+export const updateUserPassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  const isValidPassword = await bcrypt.compare(oldPassword, user.password);
+
+  if (!isValidPassword) {
+    throw createHttpError(401, 'Incorrect password');
+  }
+
+  const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+  await User.updateOne({ _id: user._id }, { password: hashedNewPassword });
+
+  await Session.deleteMany({ userId: user._id });
+
+  res.status(200).json(user);
 };

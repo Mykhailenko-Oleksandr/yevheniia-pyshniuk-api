@@ -6,9 +6,15 @@ import {
   getCurrentUser,
   getUserById,
   updateUserAvatar,
+  updateUserName,
+  updateUserPassword,
+  updateUserRole,
 } from '../controllers/usersController.js';
 import {
   getAllUsersSchema,
+  updateNameSchema,
+  updatePasswordSchema,
+  updateRoleSchema,
   userIdSchema,
 } from '../validations/usersValidation.js';
 import { upload } from '../middleware/multer.js';
@@ -29,6 +35,27 @@ router.patch(
   authenticate,
   upload.single('avatar'),
   updateUserAvatar,
+);
+
+router.patch(
+  '/users/:userId/role',
+  authenticate,
+  celebrate(updateRoleSchema),
+  updateUserRole,
+);
+
+router.patch(
+  '/users/me/name',
+  authenticate,
+  celebrate(updateNameSchema),
+  updateUserName,
+);
+
+router.patch(
+  '/users/me/password',
+  authenticate,
+  celebrate(updatePasswordSchema),
+  updateUserPassword,
 );
 
 export default router;
