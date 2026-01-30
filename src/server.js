@@ -12,6 +12,7 @@ import projectsRoutes from './routes/projectsRoutes.js';
 import feedbacksRoutes from './routes/feedbacksRoutes.js';
 import usersRoutes from './routes/usersRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import messagesRoutes from './routes/messagesRoutes.js';
 
 import cookieParser from 'cookie-parser';
 
@@ -28,6 +29,7 @@ app.use(projectsRoutes);
 app.use(feedbacksRoutes);
 app.use(usersRoutes);
 app.use(authRoutes);
+app.use(messagesRoutes);
 
 app.use(notFoundHandler);
 

@@ -58,7 +58,7 @@ export const createProject = async (req, res) => {
     images: imageUrls,
   });
 
-  res.status(200).json(newProject);
+  res.status(201).json(newProject);
 };
 
 export const updateProject = async (req, res) => {

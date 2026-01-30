@@ -1,12 +1,12 @@
-import { authenticate } from '../middleware/authenticate.js';
 import { Router } from 'express';
+import { celebrate } from 'celebrate';
+import { authenticate } from '../middleware/authenticate.js';
 import {
   createFeedback,
   deleteFeedback,
   getAllFeedbacks,
   getFeedbackById,
 } from '../controllers/feedbacksController.js';
-import { celebrate } from 'celebrate';
 import {
   createFeedbackSchema,
   feedbackIdSchema,

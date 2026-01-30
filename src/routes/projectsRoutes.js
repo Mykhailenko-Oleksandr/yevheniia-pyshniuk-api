@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { celebrate } from 'celebrate';
+import { upload } from '../middleware/multer.js';
+import { authenticate } from '../middleware/authenticate.js';
 import {
   createProject,
   deleteProject,
@@ -13,8 +15,6 @@ import {
   projectIdSchema,
   updateProjectSchema,
 } from '../validations/projectsValidation.js';
-import { authenticate } from '../middleware/authenticate.js';
-import { upload } from '../middleware/multer.js';
 
 const router = Router();
 

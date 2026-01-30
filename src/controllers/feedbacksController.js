@@ -41,7 +41,7 @@ export const createFeedback = async (req, res) => {
 
   const newFeedback = await Feedback.create({ userName, comment, rating });
 
-  res.status(200).json(newFeedback);
+  res.status(201).json(newFeedback);
 };
 
 export const deleteFeedback = async (req, res) => {

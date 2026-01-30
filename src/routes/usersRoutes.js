@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/authenticate.js';
 import { celebrate } from 'celebrate';
+import { upload } from '../middleware/multer.js';
+import { authenticate } from '../middleware/authenticate.js';
 import {
   getAllUsers,
   getCurrentUser,
@@ -17,7 +18,6 @@ import {
   updateRoleSchema,
   userIdSchema,
 } from '../validations/usersValidation.js';
-import { upload } from '../middleware/multer.js';
 
 const router = Router();
 

@@ -1,5 +1,7 @@
 import { celebrate } from 'celebrate';
 import { Router } from 'express';
+import { authenticate } from '../middleware/authenticate.js';
+
 import {
   loginUser,
   registerUser,
@@ -7,7 +9,6 @@ import {
   refreshUserSession,
 } from '../controllers/authController.js';
 
-import { authenticate } from '../middleware/authenticate.js';
 import {
   loginUserSchema,
   registerSchema,
