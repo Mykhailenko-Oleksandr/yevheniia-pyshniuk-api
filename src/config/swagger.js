@@ -146,6 +146,75 @@ const options = {
             },
           },
         },
+        Message: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string', example: '64f1f77bcf86cd799439011a' },
+            userName: {
+              type: 'string',
+              description: "Ім'я користувача, який залишив повідомлення",
+              example: 'Олександр',
+            },
+            phone: {
+              type: 'string',
+              description: 'Телефон користувача',
+              example: '+380501234567',
+            },
+            comment: {
+              type: 'string',
+              description: 'Текст повідомлення/коментаря',
+              example: 'Хочу замовити консультацію з дизайну',
+            },
+            isRead: {
+              type: 'boolean',
+              description: 'Статус прочитання повідомлення',
+              example: false,
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              example: '2026-02-02T12:00:00Z',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              example: '2026-02-02T12:30:00Z',
+            },
+          },
+        },
+        Feedback: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string', example: '64f1f77bcf86cd799439011a' },
+            userName: {
+              type: 'string',
+              description: "Ім'я користувача, який залишив відгук",
+              example: 'Олександр',
+            },
+            comment: {
+              type: 'string',
+              description: 'Текст відгуку',
+              example: 'Дуже задоволений сервісом, все швидко і якісно!',
+            },
+            rating: {
+              type: 'number',
+              description: 'Оцінка від 1 до 5',
+              minimum: 1,
+              maximum: 5,
+              example: 5,
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              example: '2026-02-02T12:00:00Z',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              example: '2026-02-02T12:30:00Z',
+            },
+          },
+        },
       },
     },
 
