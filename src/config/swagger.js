@@ -215,31 +215,112 @@ const options = {
             },
           },
         },
+        RegisterRequest: {
+          type: 'object',
+          properties: {
+            firstName: { type: 'string', example: 'Oleksandr' },
+            lastName: { type: 'string', example: 'Mykhailenko' },
+            email: {
+              type: 'string',
+              format: 'email',
+              example: 'oleksandr@example.com',
+            },
+            password: {
+              type: 'string',
+              format: 'password',
+              example: 'mypassword123',
+            },
+          },
+          required: ['firstName', 'lastName', 'email', 'password'],
+        },
+        LoginRequest: {
+          type: 'object',
+          properties: {
+            email: {
+              type: 'string',
+              format: 'email',
+              example: 'oleksandr@example.com',
+            },
+            password: {
+              type: 'string',
+              format: 'password',
+              example: 'mypassword123',
+            },
+          },
+          required: ['email', 'password'],
+        },
+        AuthResponse: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string', example: '507f1f77bcf86cd799439011' },
+            firstName: { type: 'string', example: 'Oleksandr' },
+            lastName: { type: 'string', example: 'Mykhailenko' },
+            email: { type: 'string', example: 'oleksandr@example.com' },
+            avatar: {
+              type: 'string',
+              example: 'https://res.cloudinary.com/.../default-avatar.webp',
+            },
+            role: {
+              type: 'string',
+              enum: ['Guest', 'Admin'],
+              example: 'Guest',
+            },
+          },
+        },
+        Error: {
+          type: 'object',
+          properties: {
+            statusCode: { type: 'number', example: 400 },
+            message: { type: 'string', example: 'Validation error' },
+          },
+        },
       },
     },
 
     paths: {
-      '/api/messages': {
-        get: {
-          tags: ['Messages'],
-          summary: 'Отримати всі повідомлення',
-          description: 'Повертає список повідомлень з кількістю',
+      '/api/auth/register': {
+        post: {
+          tags: ['Auth'],
+          summary: 'Register a new user',
+          description:
+            'Creates a new user account and returns user data with session cookies',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/RegisterRequest',
+                },
+              },
+            },
+          },
           responses: {
-            200: {
-              description: 'Успішна відповідь',
+            201: {
+              description: 'User successfully registered',
               content: {
                 'application/json': {
                   schema: {
-                    type: 'object',
-                    properties: {
-                      totalCount: { type: 'number', example: 10 },
-                      unreadCount: { type: 'number', example: 3 },
-                      readCount: { type: 'number', example: 7 },
-                      messages: {
-                        type: 'array',
-                        items: { $ref: '#/components/schemas/Message' },
-                      },
-                    },
+                    $ref: '#/components/schemas/User',
+                  },
+                },
+              },
+            },
+            409: {
+              description: 'Email already in use',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'Validation error',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
                   },
                 },
               },
@@ -247,6 +328,108 @@ const options = {
           },
         },
       },
+      // '/api/auth/login': {
+      //   post: {
+      //     tags: ['Auth'],
+      //     summary: 'Login user',
+      //     description:
+      //       'Authenticates user and returns user data with session cookies',
+      //     requestBody: {
+      //       required: true,
+      //       content: {
+      //         'application/json': {
+      //           schema: {
+      //             $ref: '#/components/schemas/LoginRequest',
+      //           },
+      //         },
+      //       },
+      //     },
+      //     responses: {
+      //       200: {
+      //         description: 'User successfully logged in',
+      //         content: {
+      //           'application/json': {
+      //             schema: {
+      //               $ref: '#/components/schemas/User',
+      //             },
+      //           },
+      //         },
+      //       },
+      //       401: {
+      //         description: 'Invalid credentials',
+      //         content: {
+      //           'application/json': {
+      //             schema: {
+      //               $ref: '#/components/schemas/Error',
+      //             },
+      //           },
+      //         },
+      //       },
+      //       400: {
+      //         description: 'Validation error',
+      //         content: {
+      //           'application/json': {
+      //             schema: {
+      //               $ref: '#/components/schemas/Error',
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
+      // '/api/auth/logout': {
+      //   post: {
+      //     tags: ['Auth'],
+      //     summary: 'Logout user',
+      //     description: 'Logs out user and clears session cookies',
+      //     security: [
+      //       {
+      //         cookieAuth: [],
+      //       },
+      //     ],
+      //     responses: {
+      //       204: {
+      //         description: 'User successfully logged out',
+      //       },
+      //     },
+      //   },
+      // },
+      // '/api/auth/refresh': {
+      //   post: {
+      //     tags: ['Auth'],
+      //     summary: 'Refresh user session',
+      //     description: 'Refreshes user session and returns new session cookies',
+      //     responses: {
+      //       200: {
+      //         description: 'Session successfully refreshed',
+      //         content: {
+      //           'application/json': {
+      //             schema: {
+      //               type: 'object',
+      //               properties: {
+      //                 message: {
+      //                   type: 'string',
+      //                   example: 'Session refreshed',
+      //                 },
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //       401: {
+      //         description: 'Session not found or expired',
+      //         content: {
+      //           'application/json': {
+      //             schema: {
+      //               $ref: '#/components/schemas/Error',
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
     },
   },
   apis: [],
