@@ -290,6 +290,26 @@ const options = {
           },
           required: ['oldPassword', 'newPassword'],
         },
+        CreateFeedbackRequest: {
+          type: 'object',
+          properties: {
+            userName: {
+              type: 'string',
+              example: 'Petro Petrenko',
+            },
+            comment: {
+              type: 'string',
+              example: 'Telegram',
+            },
+            rating: {
+              type: 'number',
+              minimum: 1,
+              maximum: 5,
+              example: '5',
+            },
+          },
+          required: ['userName', 'comment', 'rating'],
+        },
         Error: {
           type: 'object',
           properties: {
@@ -1049,6 +1069,164 @@ const options = {
             },
             404: {
               description: 'Project not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      // Feedbacks
+      '/api/feedbacks': {
+        get: {
+          tags: ['Feedbacks'],
+          summary: 'Get all feedbacks',
+          description: 'Returns a paginated list of feedbacks',
+          parameters: [
+            {
+              name: 'page',
+              in: 'query',
+              schema: { type: 'integer', minimum: 1, default: 1 },
+              description: 'Page number',
+            },
+            {
+              name: 'perPage',
+              in: 'query',
+              schema: { type: 'integer', minimum: 5, maximum: 20, default: 10 },
+              description: 'Number of feedbacks per page',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'List of feedbacks with pagination',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      page: { type: 'integer', example: 1 },
+                      perPage: { type: 'integer', example: 10 },
+                      totalFeedbacks: { type: 'integer', example: 50 },
+                      totalPages: { type: 'integer', example: 5 },
+                      feedbacks: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/Feedback' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          tags: ['Feedbacks'],
+          summary: 'Create feedback',
+          description: 'Creates a new feedback entry',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/CreateFeedbackRequest' },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: 'Feedback successfully created',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Feedback' },
+                },
+              },
+            },
+            400: {
+              description: 'Validation error',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/feedbacks/{feedbackId}': {
+        get: {
+          tags: ['Feedbacks'],
+          summary: 'Get feedback by ID',
+          description: 'Returns feedback data by ID',
+          parameters: [
+            {
+              name: 'feedbackId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Feedback ID',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Feedback data',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Feedback' },
+                },
+              },
+            },
+            404: {
+              description: 'Feedback not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+        delete: {
+          tags: ['Feedbacks'],
+          summary: 'Delete feedback',
+          description: 'Deletes a feedback (Admin only)',
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'feedbackId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Feedback deleted',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Feedback' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Feedback not found',
               content: {
                 'application/json': {
                   schema: {
