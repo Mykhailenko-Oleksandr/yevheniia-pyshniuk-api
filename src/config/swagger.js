@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://yevheniia-pyshniuk-api.onrender.com',
       },
     ],
     components: {
@@ -1298,7 +1298,6 @@ const options = {
           },
         },
       },
-
       '/api/messages/new': {
         get: {
           tags: ['Messages'],
@@ -1336,7 +1335,6 @@ const options = {
           },
         },
       },
-
       '/api/messages/all': {
         get: {
           tags: ['Messages'],
@@ -1374,7 +1372,6 @@ const options = {
           },
         },
       },
-
       '/api/messages/all/{messageId}': {
         get: {
           tags: ['Messages'],

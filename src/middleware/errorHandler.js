@@ -1,9 +1,6 @@
 import { HttpError } from 'http-errors';
 
 export const errorHandler = (err, req, res, next) => {
-  /* Видалить в кінці */
-  console.log('err', err);
-
   if (err instanceof HttpError) {
     return res.status(err.status).json({
       message: err.message || err.name,
