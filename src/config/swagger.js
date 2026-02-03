@@ -249,35 +249,61 @@ const options = {
           },
           required: ['email', 'password'],
         },
-        AuthResponse: {
+        UpdateRoleRequest: {
           type: 'object',
           properties: {
-            _id: { type: 'string', example: '507f1f77bcf86cd799439011' },
-            firstName: { type: 'string', example: 'Oleksandr' },
-            lastName: { type: 'string', example: 'Mykhailenko' },
-            email: { type: 'string', example: 'oleksandr@example.com' },
-            avatar: {
-              type: 'string',
-              example: 'https://res.cloudinary.com/.../default-avatar.webp',
-            },
             role: {
               type: 'string',
               enum: ['Guest', 'Admin'],
               example: 'Guest',
             },
           },
+          required: ['role'],
+        },
+        UpdateNameRequest: {
+          type: 'object',
+          properties: {
+            firstName: {
+              type: 'string',
+              example: 'Petro',
+            },
+            lastName: {
+              type: 'string',
+              example: 'Petrenko',
+            },
+          },
+          required: ['firstName', 'lastName'],
+        },
+        UpdatePasswordRequest: {
+          type: 'object',
+          properties: {
+            oldPassword: {
+              type: 'string',
+              format: 'password',
+              example: 'mypassword123',
+            },
+            newPassword: {
+              type: 'string',
+              format: 'password',
+              example: 'mypassword456',
+            },
+          },
+          required: ['oldPassword', 'newPassword'],
         },
         Error: {
           type: 'object',
           properties: {
-            statusCode: { type: 'number', example: 400 },
-            message: { type: 'string', example: 'Validation error' },
+            message: {
+              type: 'string',
+              example: 'Error message',
+            },
           },
         },
       },
     },
 
     paths: {
+      // Auth
       '/api/auth/register': {
         post: {
           tags: ['Auth'],
@@ -328,108 +354,433 @@ const options = {
           },
         },
       },
-      // '/api/auth/login': {
-      //   post: {
-      //     tags: ['Auth'],
-      //     summary: 'Login user',
-      //     description:
-      //       'Authenticates user and returns user data with session cookies',
-      //     requestBody: {
-      //       required: true,
-      //       content: {
-      //         'application/json': {
-      //           schema: {
-      //             $ref: '#/components/schemas/LoginRequest',
-      //           },
-      //         },
-      //       },
-      //     },
-      //     responses: {
-      //       200: {
-      //         description: 'User successfully logged in',
-      //         content: {
-      //           'application/json': {
-      //             schema: {
-      //               $ref: '#/components/schemas/User',
-      //             },
-      //           },
-      //         },
-      //       },
-      //       401: {
-      //         description: 'Invalid credentials',
-      //         content: {
-      //           'application/json': {
-      //             schema: {
-      //               $ref: '#/components/schemas/Error',
-      //             },
-      //           },
-      //         },
-      //       },
-      //       400: {
-      //         description: 'Validation error',
-      //         content: {
-      //           'application/json': {
-      //             schema: {
-      //               $ref: '#/components/schemas/Error',
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
-      // '/api/auth/logout': {
-      //   post: {
-      //     tags: ['Auth'],
-      //     summary: 'Logout user',
-      //     description: 'Logs out user and clears session cookies',
-      //     security: [
-      //       {
-      //         cookieAuth: [],
-      //       },
-      //     ],
-      //     responses: {
-      //       204: {
-      //         description: 'User successfully logged out',
-      //       },
-      //     },
-      //   },
-      // },
-      // '/api/auth/refresh': {
-      //   post: {
-      //     tags: ['Auth'],
-      //     summary: 'Refresh user session',
-      //     description: 'Refreshes user session and returns new session cookies',
-      //     responses: {
-      //       200: {
-      //         description: 'Session successfully refreshed',
-      //         content: {
-      //           'application/json': {
-      //             schema: {
-      //               type: 'object',
-      //               properties: {
-      //                 message: {
-      //                   type: 'string',
-      //                   example: 'Session refreshed',
-      //                 },
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //       401: {
-      //         description: 'Session not found or expired',
-      //         content: {
-      //           'application/json': {
-      //             schema: {
-      //               $ref: '#/components/schemas/Error',
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
+      '/api/auth/login': {
+        post: {
+          tags: ['Auth'],
+          summary: 'Login user',
+          description:
+            'Authenticates user and returns user data with session cookies',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/LoginRequest',
+                },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'User successfully logged in',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/User',
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Invalid credentials',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'Validation error',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/auth/logout': {
+        post: {
+          tags: ['Auth'],
+          summary: 'Logout user',
+          description: 'Logs out user and clears session cookies',
+          security: [
+            {
+              cookieAuth: [],
+            },
+          ],
+          responses: {
+            204: {
+              description: 'User successfully logged out',
+            },
+          },
+        },
+      },
+      '/api/auth/refresh': {
+        get: {
+          tags: ['Auth'],
+          summary: 'Refresh user session',
+          description: 'Refreshes user session and returns new session cookies',
+          responses: {
+            200: {
+              description: 'Session successfully refreshed',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: {
+                        type: 'string',
+                        example: 'Session refreshed',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Session not found or expired',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      // Users
+      '/api/users': {
+        get: {
+          tags: ['Users'],
+          summary: 'Get all users',
+          description: 'Returns a paginated list of all users (Admin only)',
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'page',
+              in: 'query',
+              schema: { type: 'integer', minimum: 1, default: 1 },
+              description: 'Page number',
+            },
+            {
+              name: 'perPage',
+              in: 'query',
+              schema: { type: 'integer', minimum: 5, maximum: 20, default: 10 },
+              description: 'Number of users per page',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'List of users with pagination',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      page: { type: 'integer', example: 1 },
+                      perPage: { type: 'integer', example: 10 },
+                      totalUsers: { type: 'integer', example: 50 },
+                      totalPages: { type: 'integer', example: 5 },
+                      users: {
+                        type: 'array',
+                        items: {
+                          $ref: '#/components/schemas/User',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/users/me': {
+        get: {
+          tags: ['Users'],
+          summary: 'Get current user',
+          description: 'Returns the currently authenticated user',
+          security: [{ cookieAuth: [] }],
+          responses: {
+            200: {
+              description: 'Current user data',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/User' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/users/{userId}': {
+        get: {
+          tags: ['Users'],
+          summary: 'Get user by ID',
+          description: 'Returns user data by ID',
+          parameters: [
+            {
+              name: 'userId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'User ID',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'User data',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/User' },
+                },
+              },
+            },
+            404: {
+              description: 'User not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/users/me/avatar': {
+        patch: {
+          tags: ['Users'],
+          summary: 'Update user avatar',
+          description: 'Uploads and updates avatar for current user',
+          security: [{ cookieAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: { avatar: { type: 'string', format: 'binary' } },
+                },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'Avatar updated',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: { url: { type: 'string', format: 'uri' } },
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'No file provided',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/users/{userId}/role': {
+        patch: {
+          tags: ['Users'],
+          summary: 'Update user role',
+          description: 'Updates role of a user (Admin only)',
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'userId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/UpdateRoleRequest' },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'Role updated',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/User' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'User not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/users/me/name': {
+        patch: {
+          tags: ['Users'],
+          summary: 'Update user name',
+          description: 'Updates first and last name of current user',
+          security: [{ cookieAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/UpdateNameRequest' },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'Name updated',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/User' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'User not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/users/me/password': {
+        patch: {
+          tags: ['Users'],
+          summary: 'Update user password',
+          description: 'Updates password of current user',
+          security: [{ cookieAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/UpdatePasswordRequest' },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'Password updated',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string', example: 'Password updated' },
+                    },
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'User not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
   apis: [],
