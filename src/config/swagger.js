@@ -781,6 +781,285 @@ const options = {
           },
         },
       },
+
+      // Projects
+      '/api/projects': {
+        get: {
+          tags: ['Projects'],
+          summary: 'Get all projects',
+          description: 'Returns a paginated list of projects',
+          parameters: [
+            {
+              name: 'page',
+              in: 'query',
+              schema: { type: 'integer', minimum: 1, default: 1 },
+              description: 'Page number',
+            },
+            {
+              name: 'perPage',
+              in: 'query',
+              schema: { type: 'integer', minimum: 5, maximum: 20, default: 10 },
+              description: 'Number of projects per page',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'List of projects with pagination',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      page: { type: 'integer', example: 1 },
+                      perPage: { type: 'integer', example: 10 },
+                      totalProjects: { type: 'integer', example: 50 },
+                      totalPages: { type: 'integer', example: 5 },
+                      projects: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/Project' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          tags: ['Projects'],
+          summary: 'Create a new project',
+          description: 'Creates a new project (Admin only)',
+          security: [{ cookieAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    images: {
+                      type: 'array',
+                      items: { type: 'string', format: 'binary' },
+                      description: 'Up to 10 images',
+                    },
+                    en: {
+                      type: 'object',
+                      properties: {
+                        title: {
+                          type: 'string',
+                          example: 'Modern Interior Design',
+                        },
+                        description: {
+                          type: 'string',
+                          example: 'Project description in English',
+                        },
+                      },
+                    },
+                    uk: {
+                      type: 'object',
+                      properties: {
+                        title: {
+                          type: 'string',
+                          example: "Сучасний інтер'єрний дизайн",
+                        },
+                        description: {
+                          type: 'string',
+                          example: 'Опис проєкту українською',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: 'Project successfully created',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Project' },
+                },
+              },
+            },
+            400: {
+              description: 'Images required',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/projects/{projectId}': {
+        get: {
+          tags: ['Projects'],
+          summary: 'Get project by ID',
+          description: 'Returns project data by ID',
+          parameters: [
+            {
+              name: 'projectId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Project ID',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Project data',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Project' },
+                },
+              },
+            },
+            404: {
+              description: 'Project not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+        patch: {
+          tags: ['Projects'],
+          summary: 'Update project',
+          description: 'Updates project data (Admin only)',
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'projectId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    images: {
+                      type: 'array',
+                      items: { type: 'string', format: 'binary' },
+                      description: 'Optional new images',
+                    },
+                    en: {
+                      type: 'object',
+                      properties: {
+                        title: { type: 'string' },
+                        description: { type: 'string' },
+                      },
+                    },
+                    uk: {
+                      type: 'object',
+                      properties: {
+                        title: { type: 'string' },
+                        description: { type: 'string' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'Project updated',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Project' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Project not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+        delete: {
+          tags: ['Projects'],
+          summary: 'Delete project',
+          description: 'Deletes a project (Admin only)',
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'projectId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Project deleted',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Project' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Project not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
   apis: [],
