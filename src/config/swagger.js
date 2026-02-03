@@ -310,6 +310,24 @@ const options = {
           },
           required: ['userName', 'comment', 'rating'],
         },
+        CreateMessageRequest: {
+          type: 'object',
+          properties: {
+            userName: {
+              type: 'string',
+              example: 'Petro Petrenko',
+            },
+            phone: {
+              type: 'string',
+              example: '+380111111111',
+            },
+            comment: {
+              type: 'string',
+              example: 'Hello. Call me please',
+            },
+          },
+          required: ['userName', 'phone', 'comment'],
+        },
         Error: {
           type: 'object',
           properties: {
@@ -1227,6 +1245,260 @@ const options = {
             },
             404: {
               description: 'Feedback not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      // Messages
+      '/api/messages': {
+        post: {
+          tags: ['Messages'],
+          summary: 'Create a new message',
+          description: 'Creates a new message entry',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/CreateMessageRequest' },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: 'Message successfully sent',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string', example: 'Message send' },
+                    },
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'Validation error',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      '/api/messages/new': {
+        get: {
+          tags: ['Messages'],
+          summary: 'Get unread messages',
+          description: 'Returns all unread messages (Admin only)',
+          security: [{ cookieAuth: [] }],
+          responses: {
+            200: {
+              description: 'Unread messages list',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      totalMessages: { type: 'integer', example: 5 },
+                      messages: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/Message' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      '/api/messages/all': {
+        get: {
+          tags: ['Messages'],
+          summary: 'Get all messages',
+          description: 'Returns all messages (Admin only)',
+          security: [{ cookieAuth: [] }],
+          responses: {
+            200: {
+              description: 'All messages list',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      totalMessages: { type: 'integer', example: 20 },
+                      messages: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/Message' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      '/api/messages/all/{messageId}': {
+        get: {
+          tags: ['Messages'],
+          summary: 'Get message by ID',
+          description: 'Returns message data by ID (Admin only)',
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'messageId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Message ID',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Message data',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Message' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Message not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+        delete: {
+          tags: ['Messages'],
+          summary: 'Delete message',
+          description: 'Deletes a message (Admin only)',
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'messageId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Message deleted',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Message' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Message not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+        patch: {
+          tags: ['Messages'],
+          summary: 'Mark message as read',
+          description: 'Marks a message as read (Admin only)',
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'messageId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Message marked as read',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Message' },
+                },
+              },
+            },
+            401: {
+              description: 'Unauthorized (Admin only)',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Message not found',
               content: {
                 'application/json': {
                   schema: {
