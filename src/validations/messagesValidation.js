@@ -7,7 +7,7 @@ const objectIdValidator = (value, helpers) => {
 
 export const createMessageSchema = {
   [Segments.BODY]: Joi.object({
-    userName: Joi.string().min(3).max(30).trim().required(),
+    userName: Joi.string().min(3).max(20).trim().required(),
     phone: Joi.string()
       .pattern(/^\+[1-9]\d{1,14}$/)
       .required(),
